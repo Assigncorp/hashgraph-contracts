@@ -1,7 +1,7 @@
 pragma solidity ^0.4.24;
 
 /**
- * @title Bet
+ * @title SimpleBet
  * @dev This contract is meant to hold a bet between two parties and pay out the
  * winner after the conclusion of the bet. This contract is meant to be used
  * with two parties who want to make a 1:1 bet, as both parties must send an
@@ -10,7 +10,7 @@ pragma solidity ^0.4.24;
  * made, the original contributions cannot be withdrawan until the conclusion
  * of the bet.
  */
-contract Bet {
+contract SimpleBet {
 
   /* Variables */
   address public initiator;
@@ -93,6 +93,5 @@ contract Bet {
       counterParty.transfer(address(this).balance);
       emit BetEnd(counterParty);
     }
-    emit BetStart(initiator, counterParty, betAmount);
   }
 }
