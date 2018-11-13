@@ -1,6 +1,6 @@
 pragma solidity ^0.4.24;
 
-import "..libraries/math/SafeMath.sol";
+import "../libraries/math/SafeMath.sol";
 
 /**
  * @title Oddsbet
@@ -48,7 +48,7 @@ contract OddsBet {
     require(betAmount > 0, "There must be a betAmount");
     require(odds > 0, "There must be odds");
 
-    if isFavored {
+    if (isFavored) {
       counterpartyBetAmount = msg.value.mul(odds);
     } else {
       require(msg.value.mod(odds) == 0, "Amount contributed must be divisible by the odds");
