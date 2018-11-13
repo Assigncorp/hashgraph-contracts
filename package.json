@@ -1,0 +1,26 @@
+{
+  "name": "hashgraph-contracts",
+  "version": "1.0.0",
+  "description": "These smart contracts provide developers and users alike with contracts that can be used for a number of different applications. Users of the contracts can make bets, hold money in escrow, or perform simple arithmetic.",
+  "main": "truffle-config.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shanefontaine/hashgraph-contracts.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/shanefontaine/hashgraph-contracts/issues"
+  },
+  "homepage": "https://github.com/shanefontaine/hashgraph-contracts#readme",
+  "dependencies": {
+    "chai": "^4.2.0",
+    "chai-bignumber": "^2.0.2"
+  }
+}
