@@ -5,3 +5,4 @@ truffle-config.js
 *~
 *.swp
 *.swo
+.git/
