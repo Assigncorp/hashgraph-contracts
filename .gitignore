@@ -2,6 +2,7 @@ build/
 .idea/
 node_modules
 truffle-config.js
+package-
 *~
 *.swp
 *.swo
