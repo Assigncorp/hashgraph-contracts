@@ -18,7 +18,7 @@ contract SimpleBet {
   uint256 public betAmount;
 
   enum BetState { Uninitialized, Initialized, Started, Ended }
-  BetState public currentState;
+  BetState private _currentState;
 
   /* Events */
   event BetInitiated(address indexed initiator, address indexed counterparty, uint256 indexed betAmount);
@@ -27,7 +27,14 @@ contract SimpleBet {
   event BetEndedEarly(address indexed initiator, uint256 indexed refund);
 
   constructor() public {
-    currentState = BetState.Uninitialized;
+    _currentState = BetState.Uninitialized;
+  }
+
+  /// @dev Return the _currentState
+  /// @notice This is required for testing since enums are not supported by the ABI
+  /// https://ethereum.stackexchange.com/questions/29344/truffle-testing-enum-values?rq=1
+  function currentState() public view returns (BetState) {
+    return _currentState;
   }
 
   /// @dev Iniate the bet and define the playsers and the bet betAmount
@@ -36,13 +43,13 @@ contract SimpleBet {
     public
     payable
   {
-    require(currentState == BetState.Uninitialized, "The bet must not have yet been initiated");
+    require(_currentState == BetState.Uninitialized, "The bet must not have yet been initiated");
     betAmount = msg.value;
     require(betAmount > 0, "There must be a betAmount");
 
     initiator = msg.sender;
     counterparty = _counterparty;
-    currentState = BetState.Initialized;
+    _currentState = BetState.Initialized;
 
     emit BetStart(initiator, counterparty, betAmount);
   }
@@ -53,27 +60,12 @@ contract SimpleBet {
     public
     payable
   {
-    require(currentState == BetState.Initialized, "The bet must have been initialized");
+    require(_currentState == BetState.Initialized, "The bet must have been initialized");
     require(msg.sender == counterparty, "Contender must be the expected person");
     require(msg.value == betAmount, "The contender must match the bet");
 
-    currentState = BetState.Started;
+    _currentState = BetState.Started;
     emit BetStart(initiator, counterparty, betAmount);
-  }
-
-  /// @dev Withdraw the initial contribution prior to the start of the bet
-  /// @notice This can only be called by the initator
-  function withdrawBet()
-    public
-  {
-    require(currentState == BetState.Initialized, "The bet must have been initialized");
-    require(msg.sender == initiator, "Contender must be the expected person");
-
-    currentState = BetState.Ended;
-
-    initiator.transfer(address(this).balance);
-
-    emit BetEndedEarly(initiator, betAmount);
   }
 
   /// @dev Finalize the bet and payout the winner
@@ -82,9 +74,9 @@ contract SimpleBet {
     public
     payable
   {
-    require(currentState == BetState.Started, "Bet must have been started");
+    require(_currentState == BetState.Started, "Bet must have been started");
 
-    currentState = BetState.Ended;
+    _currentState = BetState.Ended;
 
     if (isInitiatorWinner) {
       initiator.transfer(address(this).balance);
@@ -93,5 +85,20 @@ contract SimpleBet {
       counterparty.transfer(address(this).balance);
       emit BetEnd(counterparty);
     }
+  }
+
+  /// @dev Withdraw the initial contribution prior to the start of the bet
+  /// @notice This can only be called by the initator
+  function withdrawBet()
+    public
+  {
+    require(_currentState == BetState.Initialized, "The bet must have been initialized");
+    require(msg.sender == initiator, "Contender must be the expected person");
+
+    _currentState = BetState.Ended;
+
+    initiator.transfer(address(this).balance);
+
+    emit BetEndedEarly(initiator, betAmount);
   }
 }
