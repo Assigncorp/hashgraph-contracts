@@ -17,7 +17,7 @@ contract OddsBet {
 
   /* Variables */
   address public initiator;
-  address public counterParty;
+  address public counterparty;
   uint256 public betAmount;
   uint256 public counterpartyBetAmount;
 
@@ -25,8 +25,8 @@ contract OddsBet {
   BetState public currentState;
 
   /* Events */
-  event BetInitiated(address indexed initiator, address indexed counterParty, uint256 indexed betAmount, uint256 counterpartyBetAmount);
-  event BetStart(address indexed initiator, address indexed counterParty, uint256 indexed betAmount, uint256 counterpartyBetAmount);
+  event BetInitiated(address indexed initiator, address indexed counterparty, uint256 indexed betAmount, uint256 counterpartyBetAmount);
+  event BetStart(address indexed initiator, address indexed counterparty, uint256 indexed betAmount, uint256 counterpartyBetAmount);
   event BetEnd(address indexed winner);
   event BetEndedEarly(address indexed initiator, uint256 indexed refund);
 
@@ -35,11 +35,11 @@ contract OddsBet {
   }
 
   /// @dev Iniate the bet and define the playsers and the bet betAmount
-  /// @param _counterParty The counterparty to the bet
+  /// @param _counterparty The counterparty to the bet
   /// @param odds Odds of the bet
-  /// @param isFavored is the initiator favored. If so, divide for counterParty
+  /// @param isFavored is the initiator favored. If so, divide for counterparty
   /// amount. If not, multiply for counterparty amount.
-  function initiateBet(address _counterParty, uint256 odds, bool isFavored)
+  function initiateBet(address _counterparty, uint256 odds, bool isFavored)
     public
     payable
   {
@@ -56,10 +56,10 @@ contract OddsBet {
     }
 
     initiator = msg.sender;
-    counterParty = _counterParty;
+    counterparty = _counterparty;
     currentState = BetState.Initialized;
 
-    emit BetStart(initiator, counterParty, betAmount, counterpartyBetAmount);
+    emit BetStart(initiator, counterparty, betAmount, counterpartyBetAmount);
   }
 
   /// @dev Start the bet by providing the second contribution.
@@ -69,11 +69,11 @@ contract OddsBet {
     payable
   {
     require(currentState == BetState.Initialized, "The bet must have been initialized");
-    require(msg.sender == counterParty, "Contender must be the expected person");
+    require(msg.sender == counterparty, "Contender must be the expected person");
     require(msg.value == counterpartyBetAmount, "The contender must match the bet");
 
     currentState = BetState.Started;
-    emit BetStart(initiator, counterParty, betAmount, counterpartyBetAmount);
+    emit BetStart(initiator, counterparty, betAmount, counterpartyBetAmount);
   }
 
   /// @dev Withdraw the initial contribution prior to the start of the bet
@@ -105,8 +105,8 @@ contract OddsBet {
       initiator.transfer(address(this).balance);
       emit BetEnd(initiator);
     } else {
-      counterParty.transfer(address(this).balance);
-      emit BetEnd(counterParty);
+      counterparty.transfer(address(this).balance);
+      emit BetEnd(counterparty);
     }
   }
 }

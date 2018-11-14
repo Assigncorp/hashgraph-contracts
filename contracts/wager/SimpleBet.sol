@@ -6,7 +6,7 @@ pragma solidity ^0.4.24;
  * winner after the conclusion of the bet. This contract is meant to be used
  * with two parties who want to make a 1:1 bet, as both parties must send an
  * equal number of ETH. The initiator can withdraw his bet prior to the
- * counterParty sending his contribution. After both contributions have been
+ * counterparty sending his contribution. After both contributions have been
  * made, the original contributions cannot be withdrawan until the conclusion
  * of the bet.
  */
@@ -14,15 +14,15 @@ contract SimpleBet {
 
   /* Variables */
   address public initiator;
-  address public counterParty;
+  address public counterparty;
   uint256 public betAmount;
 
   enum BetState { Uninitialized, Initialized, Started, Ended }
   BetState public currentState;
 
   /* Events */
-  event BetInitiated(address indexed initiator, address indexed counterParty, uint256 indexed betAmount);
-  event BetStart(address indexed initiator, address indexed counterParty, uint256 indexed betAmount);
+  event BetInitiated(address indexed initiator, address indexed counterparty, uint256 indexed betAmount);
+  event BetStart(address indexed initiator, address indexed counterparty, uint256 indexed betAmount);
   event BetEnd(address indexed winner);
   event BetEndedEarly(address indexed initiator, uint256 indexed refund);
 
@@ -31,8 +31,8 @@ contract SimpleBet {
   }
 
   /// @dev Iniate the bet and define the playsers and the bet betAmount
-  /// @param _counterParty The counterParty to the bet
-  function initiateBet(address _counterParty)
+  /// @param _counterparty The counterparty to the bet
+  function initiateBet(address _counterparty)
     public
     payable
   {
@@ -41,24 +41,24 @@ contract SimpleBet {
     require(betAmount > 0, "There must be a betAmount");
 
     initiator = msg.sender;
-    counterParty = _counterParty;
+    counterparty = _counterparty;
     currentState = BetState.Initialized;
 
-    emit BetStart(initiator, counterParty, betAmount);
+    emit BetStart(initiator, counterparty, betAmount);
   }
 
   /// @dev Start the bet by providing the second contribution.
-  /// @notice This is only callable by the counterParty specified in initiateBet()
+  /// @notice This is only callable by the counterparty specified in initiateBet()
   function startBet()
     public
     payable
   {
     require(currentState == BetState.Initialized, "The bet must have been initialized");
-    require(msg.sender == counterParty, "Contender must be the expected person");
+    require(msg.sender == counterparty, "Contender must be the expected person");
     require(msg.value == betAmount, "The contender must match the bet");
 
     currentState = BetState.Started;
-    emit BetStart(initiator, counterParty, betAmount);
+    emit BetStart(initiator, counterparty, betAmount);
   }
 
   /// @dev Withdraw the initial contribution prior to the start of the bet
@@ -90,8 +90,8 @@ contract SimpleBet {
       initiator.transfer(address(this).balance);
       emit BetEnd(initiator);
     } else {
-      counterParty.transfer(address(this).balance);
-      emit BetEnd(counterParty);
+      counterparty.transfer(address(this).balance);
+      emit BetEnd(counterparty);
     }
   }
 }
