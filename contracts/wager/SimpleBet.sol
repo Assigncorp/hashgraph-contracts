@@ -6,7 +6,7 @@ pragma solidity ^0.4.24;
  * winner after the conclusion of the bet. This contract is meant to be used
  * with two parties who want to make a 1:1 bet, as both parties must send an
  * equal number of ETH. The initiator can withdraw his bet prior to the
- * counterparty sending his contribution. After both contributions have been
+ * counterParty sending his contribution. After both contributions have been
  * made, the original contributions cannot be withdrawan until the conclusion
  * of the bet.
  */
@@ -31,7 +31,7 @@ contract SimpleBet {
   }
 
   /// @dev Iniate the bet and define the playsers and the bet betAmount
-  /// @param _counterParty The counterparty to the bet
+  /// @param _counterParty The counterParty to the bet
   function initiateBet(address _counterParty)
     public
     payable
@@ -48,7 +48,7 @@ contract SimpleBet {
   }
 
   /// @dev Start the bet by providing the second contribution.
-  /// @notice This is only callable by the counterparty specified in initiateBet()
+  /// @notice This is only callable by the counterParty specified in initiateBet()
   function startBet()
     public
     payable
