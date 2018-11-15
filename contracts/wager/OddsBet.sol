@@ -59,7 +59,7 @@ contract OddsBet {
       counterpartyBetAmount = msg.value.mul(odds);
     } else {
       require(msg.value.mod(odds) == 0, "Amount contributed must be divisible by the odds");
-      require(msg.value > odds, "Odds cannot surpass the amount")
+      require(msg.value > odds, "Odds cannot surpass the amount");
       counterpartyBetAmount = msg.value.div(odds);
     }
 
