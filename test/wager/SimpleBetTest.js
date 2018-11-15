@@ -93,6 +93,11 @@ contract('SimpleBet', function ([_, initiator, counterparty, otherEntity]) {
       await this.contract.initiateBet(counterparty, { from: initiator, value: amount });
       await shouldFail.reverting(this.contract.closeBet(initiatorIsWinner, { from: initiator }));
     });
+    it('should not work if called by a third party', async function () {
+      await this.contract.initiateBet(counterparty, { from: initiator, value: amount });
+      await this.contract.startBet({ from: counterparty, value: amount });
+      await shouldFail.reverting(this.contract.closeBet(initiatorIsWinner, { from: otherEntity }));
+    });
     it('should pay out initiator', async function () {
       await this.contract.initiateBet(counterparty, { from: initiator, value: amount });
       await this.contract.startBet({ from: counterparty, value: amount });

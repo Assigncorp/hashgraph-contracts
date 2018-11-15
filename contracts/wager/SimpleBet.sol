@@ -81,6 +81,7 @@ contract SimpleBet {
     payable
   {
     require(_currentState == BetState.Started, "Bet must have been started");
+    require(msg.sender == initiator || msg.sender == counterparty);
 
     _currentState = BetState.Ended;
 
