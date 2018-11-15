@@ -9,6 +9,12 @@ pragma solidity ^0.4.24;
  * counterparty sending his contribution. After both contributions have been
  * made, the original contributions cannot be withdrawan until the conclusion
  * of the bet.
+ *
+ * @dev The flow of contract is as follows:
+ * 1) anyone uploads the contract
+ * 2) the initiator calls initiateBet() and sends the amount of ETH they want to bet in the transaction
+ * 3) the counterparty calls startBet() and sends the same amount of ETH the initiator sent
+ * 4) either the initiator or the counterparty can close the bet and determine the winner
  */
 contract SimpleBet {
 
