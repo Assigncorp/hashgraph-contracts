@@ -21,6 +21,7 @@
   "homepage": "https://github.com/shanefontaine/hashgraph-contracts#readme",
   "dependencies": {
     "chai": "^4.2.0",
-    "chai-bignumber": "^2.0.2"
+    "chai-bignumber": "^2.0.2",
+    "pify": "^4.0.1"
   }
 }
