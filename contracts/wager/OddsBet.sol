@@ -22,7 +22,7 @@ contract OddsBet {
   uint256 public counterpartyBetAmount;
 
   enum BetState { Uninitialized, Initialized, Started, Ended }
-  BetState public currentState;
+  BetState private _currentState;
 
   /* Events */
   event BetInitiated(address indexed initiator, address indexed counterparty, uint256 indexed betAmount, uint256 counterpartyBetAmount);
@@ -31,7 +31,7 @@ contract OddsBet {
   event BetEndedEarly(address indexed initiator, uint256 indexed refund);
 
   constructor() public {
-    currentState = BetState.Uninitialized;
+    _currentState = BetState.Uninitialized;
   }
 
   /// @dev Return the _currentState
@@ -40,7 +40,7 @@ contract OddsBet {
   function currentState() public view returns (BetState) {
     return _currentState;
   }
-  
+
   /// @dev Iniate the bet and define the playsers and the bet betAmount
   /// @param _counterparty The counterparty to the bet
   /// @param odds Odds of the bet
@@ -50,7 +50,7 @@ contract OddsBet {
     public
     payable
   {
-    require(currentState == BetState.Uninitialized, "The bet must not have yet been initiated");
+    require(_currentState == BetState.Uninitialized, "The bet must not have yet been initiated");
     betAmount = msg.value;
     require(betAmount > 0, "There must be a betAmount");
     require(odds > 0, "There must be odds");
@@ -64,7 +64,7 @@ contract OddsBet {
 
     initiator = msg.sender;
     counterparty = _counterparty;
-    currentState = BetState.Initialized;
+    _currentState = BetState.Initialized;
 
     emit BetStart(initiator, counterparty, betAmount, counterpartyBetAmount);
   }
@@ -75,11 +75,11 @@ contract OddsBet {
     public
     payable
   {
-    require(currentState == BetState.Initialized, "The bet must have been initialized");
+    require(_currentState == BetState.Initialized, "The bet must have been initialized");
     require(msg.sender == counterparty, "Contender must be the expected person");
     require(msg.value == counterpartyBetAmount, "The contender must match the bet");
 
-    currentState = BetState.Started;
+    _currentState = BetState.Started;
     emit BetStart(initiator, counterparty, betAmount, counterpartyBetAmount);
   }
 
@@ -88,10 +88,10 @@ contract OddsBet {
   function withdrawBet()
     public
   {
-    require(currentState == BetState.Initialized, "The bet must have been initialized");
+    require(_currentState == BetState.Initialized, "The bet must have been initialized");
     require(msg.sender == initiator, "Contender must be the expected person");
 
-    currentState = BetState.Ended;
+    _currentState = BetState.Ended;
 
     initiator.transfer(address(this).balance);
 
@@ -104,9 +104,9 @@ contract OddsBet {
     public
     payable
   {
-    require(currentState == BetState.Started, "Bet must have been started");
+    require(_currentState == BetState.Started, "Bet must have been started");
 
-    currentState = BetState.Ended;
+    _currentState = BetState.Ended;
 
     if (isInitiatorWinner) {
       initiator.transfer(address(this).balance);
