@@ -84,21 +84,6 @@ contract OddsBet {
     emit BetStart(initiator, counterparty, betAmount, counterpartyBetAmount);
   }
 
-  /// @dev Withdraw the initial contribution prior to the start of the bet
-  /// @notice This can only be called by the initator
-  function withdrawBet()
-    public
-  {
-    require(_currentState == BetState.Initialized, "The bet must have been initialized");
-    require(msg.sender == initiator, "Contender must be the expected person");
-
-    _currentState = BetState.Ended;
-
-    initiator.transfer(address(this).balance);
-
-    emit BetEndedEarly(initiator, betAmount);
-  }
-
   /// @dev Finalize the bet and payout the winner
   /// @param isInitiatorWinner Result of the bet to determin who gets paid.
   function closeBet(bool isInitiatorWinner)
@@ -116,5 +101,20 @@ contract OddsBet {
       counterparty.transfer(address(this).balance);
       emit BetEnd(counterparty);
     }
+  }
+
+  /// @dev Withdraw the initial contribution prior to the start of the bet
+  /// @notice This can only be called by the initator
+  function withdrawBet()
+    public
+  {
+    require(_currentState == BetState.Initialized, "The bet must have been initialized");
+    require(msg.sender == initiator, "Contender must be the expected person");
+
+    _currentState = BetState.Ended;
+
+    initiator.transfer(address(this).balance);
+
+    emit BetEndedEarly(initiator, betAmount);
   }
 }
