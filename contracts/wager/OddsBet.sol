@@ -34,6 +34,13 @@ contract OddsBet {
     currentState = BetState.Uninitialized;
   }
 
+  /// @dev Return the _currentState
+  /// @notice This is required for testing since enums are not supported by the ABI
+  /// https://ethereum.stackexchange.com/questions/29344/truffle-testing-enum-values?rq=1
+  function currentState() public view returns (BetState) {
+    return _currentState;
+  }
+  
   /// @dev Iniate the bet and define the playsers and the bet betAmount
   /// @param _counterparty The counterparty to the bet
   /// @param odds Odds of the bet
