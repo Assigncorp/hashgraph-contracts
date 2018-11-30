@@ -3,8 +3,8 @@ require('babel-polyfill');
 
 var provider;
 var HDWalletProvider = require('truffle-hdwallet-provider');
-var mnemonic = 'beauty notable increase opera double hire witness solar casino dash habit filter';
-var infura_apikey = "P6LEmOqq2Q6EvqtzK2YS";
+var mnemonic = '';
+var infura_apikey = "";
 
 if (!process.env.SOLIDITY_COVERAGE){
   provider = new HDWalletProvider(mnemonic, 'https://ropsten.infura.io/')
