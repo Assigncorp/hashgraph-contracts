@@ -2,9 +2,6 @@ const { ethGetBalance } = require('../helpers/web3');
 const { ether } = require('../helpers/ether');
 const shouldFail = require('../helpers/shouldFail');
 
-// TODO: Fix state tests
-// TODO: Consider gas and fix gas tests
-
 const BigNumber = web3.BigNumber;
 
 require('chai')
@@ -32,15 +29,15 @@ contract('OddsBet', function ([_, initiator, counterparty, otherEntity]) {
 
   describe('constructor', function () {
     it('should set currentState', async function () {
-      // (await this.contract.currentState()).should.be.equal(stateUninitialized);
+      (await this.contract.currentState()).should.be.bignumber.equal(stateUninitialized);
     });
   });
 
   describe('currentState', function () {
     it('should return _currentState', async function () {
-      // (await this.contract.currentState()).should.be.equal(stateUninitialized);
+      (await this.contract.currentState()).should.be.bignumber.equal(stateUninitialized);
       await this.contract.initiateBet(counterparty, odds, isFavored, { from: initiator, value: amount });
-      // (await this.contract.currentState()).should.be.equal(stateInitialized);
+      (await this.contract.currentState()).should.be.bignumber.equal(stateInitialized);
     });
   });
 
@@ -48,7 +45,7 @@ contract('OddsBet', function ([_, initiator, counterparty, otherEntity]) {
     it('should initiate a bet', async function () {
       await this.contract.initiateBet(counterparty, odds, isFavored, { from: initiator, value: amount });
       (await this.contract.betAmount()).should.be.bignumber.equal(amount);
-      // (await this.contract.currentState()).should.be.equal(stateInitialized);
+      (await this.contract.currentState()).should.be.bignumber.equal(stateInitialized);
     });
     it('should not initiate a bet twice', async function () {
       await this.contract.initiateBet(counterparty, odds, isFavored, { from: initiator, value: amount });
@@ -78,7 +75,7 @@ contract('OddsBet', function ([_, initiator, counterparty, otherEntity]) {
       await this.contract.initiateBet(counterparty, odds, isFavored, { from: initiator, value: amount });
       (await this.contract.initiator()).should.be.equal(initiator);
       (await this.contract.counterparty()).should.be.equal(counterparty);
-      // (await this.contract.currentState()).should.be.equal(stateInitialized);
+      (await this.contract.currentState()).should.be.bignumber.equal(stateInitialized);
     });
   });
 
@@ -86,7 +83,7 @@ contract('OddsBet', function ([_, initiator, counterparty, otherEntity]) {
     it('should start a bet', async function () {
       await this.contract.initiateBet(counterparty, odds, isFavored, { from: initiator, value: amount });
       await this.contract.startBet({ from: counterparty, value: positiveBetAmount });
-      // (await this.contract.currentState()).should.be.equal(stateStarted);
+      (await this.contract.currentState()).should.be.bignumber.equal(stateStarted);
     });
     it('should not work if uninitialized', async function () {
       await this.contract.initiateBet(counterparty, odds, isFavored, { from: initiator, value: amount });
@@ -108,7 +105,7 @@ contract('OddsBet', function ([_, initiator, counterparty, otherEntity]) {
       await this.contract.initiateBet(counterparty, odds, isFavored, { from: initiator, value: amount });
       await this.contract.startBet({ from: counterparty, value: positiveBetAmount });
       await this.contract.closeBet(initiatorIsWinner, { from: initiator });
-      // (await this.contract.currentState()).should.be.equal(stateEnded);
+      (await this.contract.currentState()).should.be.bignumber.equal(stateEnded);
     });
     it('should not work if not started', async function () {
       await this.contract.initiateBet(counterparty, odds, isFavored, { from: initiator, value: amount });
@@ -145,8 +142,8 @@ contract('OddsBet', function ([_, initiator, counterparty, otherEntity]) {
       await this.contract.initiateBet(counterparty, odds, isFavored, { from: initiator, value: amount });
       await this.contract.withdrawBet({ from: initiator });
       const initiatorFinalBalance = await ethGetBalance(initiator);
-      // initiatorFinalBalance.should.be.bignumber.closeTo(initiatorInitialBalance, gas);
-      // (await this.contract.currentState()).should.be.equal(stateEnded);
+      expect(initiatorFinalBalance.toNumber()).to.be.closeTo(initiatorInitialBalance.toNumber(), gas.toNumber());
+      (await this.contract.currentState()).should.be.bignumber.equal(stateEnded);
     });
     it('should not work if in started state', async function () {
       await this.contract.initiateBet(counterparty, odds, isFavored, { from: initiator, value: amount });
