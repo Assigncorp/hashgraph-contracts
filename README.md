@@ -1,6 +1,6 @@
 ## Hashgraph Contracts
 
-These smart contracts provide developers and users alike with contracts that can be used for a number of different applications. Users of the contracts can make bets, hold money in escrow, or perform simple arithmetic.
+These smart contracts provide developers and users alike with contracts that can be used for a number of different applications. Users of the contracts can make bets, hold money in escrow, buy tokens, or perform simple arithmetic.
 
 The are written to be used on the Hedera Hashgraph platform and take advantages of the speed and efficiency provided by this network over competitors. More specifically, these contracts will be written with the following advantages in mind:
 
@@ -18,4 +18,4 @@ Any parties wanting to use the contracts would simply follow the flow provided i
 
 ## Testing
 
-To run all the tests, simply run `truffle test`
+To run all the tests, simply run `truffle test`.
