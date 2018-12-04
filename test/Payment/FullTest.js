@@ -14,7 +14,7 @@ require('chai')
 const BuyTokenMock = artifacts.require('./BuyTokenMock.sol');
 const HToken = artifacts.require('./Token.sol');
 
-contract('HToken', function ([_, buyer, seller, otherEntity]) {
+contract('Buy Token', function ([_, buyer, seller, otherEntity]) {
   const amount = ether(1.0);
   const gas = ether(0.1);
  
@@ -54,7 +54,7 @@ contract('HToken', function ([_, buyer, seller, otherEntity]) {
     
 
   });
-  describe('constructor', function () {
+  describe('Buy Process', function () {
     it('should run full cycle', async function () {
       // (await this.contract.currentState()).should.be.equal(stateUninitialized);
     });
