@@ -15,7 +15,8 @@ contract BuyToken {
     address _sellerAdd =address(0); 
     uint256 _noOfTokensPromised=0;
     mapping ( address => uint256 ) public balances;
-   
+    event PaymentClaimed(address indexed payee, uint256 weiAmount);
+
     modifier onlySeller() {
         assert(_sellerAdd == msg.sender);
         _;
@@ -83,7 +84,9 @@ contract BuyToken {
     */
     function claimPayment() onlySeller public {
         require(_SellerPwd==_buyerPwd);
+         uint256 payment = _escrow.depositsOf(msg.sender);
         _escrow.withdraw(msg.sender);
+        emit PaymentClaimed(msg.sender, payment);
     }
     
     function random() private view returns (uint8) {
