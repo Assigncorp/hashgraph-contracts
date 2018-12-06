@@ -18,4 +18,6 @@ Any parties wanting to use the contracts would simply follow the flow provided i
 
 ## Testing
 
+Since the Hashgraph mainnet is not yet live, all deployments and testing are done using existing Ethereum tooling.
+
 To run all the tests, simply run `truffle test`.
