@@ -9,16 +9,20 @@ import "./IERC20.sol";
  */
 contract BuyToken {
     Escrow private _escrow;
-    bytes32 private _buyerPwd;
-    bytes32 private _SellerPwd;
     address _tracker_0x_address =address(0); 
     address _sellerAdd =address(0); 
+    address _buyerAdd =address(0); 
     uint256 _noOfTokensPromised=0;
     mapping ( address => uint256 ) public balances;
     event PaymentClaimed(address indexed payee, uint256 weiAmount);
+    event TokensClaimed(address indexed payee, uint256 noOfTokens);
 
     modifier onlySeller() {
         assert(_sellerAdd == msg.sender);
+        _;
+    }
+    modifier onlyBuyer() {
+        assert(_buyerAdd == msg.sender);
         _;
     }
     constructor () internal {
@@ -35,36 +39,29 @@ contract BuyToken {
     function buyerTokens(address buyerAddress) public view returns (uint256) {
         return balances[buyerAddress];
     }
-    
-    
-    function hashToSeller() public view onlySeller returns (bytes32) {
-        return _buyerPwd;
-    }
+           
     /**
     * @dev Called by the payer to store the sent amount as credit to be pulled.
     * @param sellerAddress The destination address of the funds.
-    * @param passPhrase The password for seller.
+    * @param tokenAddress The token address of the funds.
     */
-    function DepositPaymentForSeller(address sellerAddress,string passPhrase,uint256 tokens) public  payable {
+    function DepositPaymentForSeller(address sellerAddress,address tokenAddress,uint256 tokens) public  payable {
         require(_sellerAdd==address(0));  
         uint256 amount = msg.value;
-        uint8 rndNumber = random();
-        _buyerPwd=keccak256(abi.encodePacked(passPhrase,rndNumber) );
         _sellerAdd=sellerAddress;
+        _buyerAdd=msg.sender;
+        _tracker_0x_address=tokenAddress;
         _noOfTokensPromised=tokens;
         _escrow.deposit.value(amount)(sellerAddress);
     }
     /**
     * @dev Called by the payer to store the sent amount as credit to be pulled.
-    * @param tokenAddress The token address of the funds.
     * @param tokens no of tokens.
-    * @param passPhrase The password for seller.
     */
-    function DepositTokenForBuyer(address tokenAddress,address buyerAddress, uint256 tokens, bytes32 passPhrase) onlySeller public  {
+    function DepositTokenForBuyer(address buyerAddress, uint256 tokens) onlySeller public  {
         require(_noOfTokensPromised==tokens);
-        require(_tracker_0x_address==address(0));
-        _SellerPwd=passPhrase;
-        _tracker_0x_address=tokenAddress;
+        require(_tracker_0x_address!=address(0));
+        
          // add the deposited tokens into existing balance 
         balances[buyerAddress]+= tokens;
 
@@ -72,25 +69,23 @@ contract BuyToken {
         IERC20(_tracker_0x_address).transferFrom(msg.sender, address(this), tokens);
     }
  
-    function claimTokens() public {
+    function claimTokens() onlyBuyer public {
         require(balances[msg.sender] >0);
-        require(_SellerPwd==_buyerPwd);
-        IERC20(_tracker_0x_address).transfer(msg.sender, balances[msg.sender]);
-         balances[msg.sender] = 0;
+        uint256 noOfTokens =balances[msg.sender] ;
+        IERC20(_tracker_0x_address).transfer(msg.sender, noOfTokens);
+        balances[msg.sender] = 0;
+        emit TokensClaimed(msg.sender, noOfTokens);
     }
     
     /**
     * @dev Withdraw accumulated balance.
     */
     function claimPayment() onlySeller public {
-        require(_SellerPwd==_buyerPwd);
          uint256 payment = _escrow.depositsOf(msg.sender);
         _escrow.withdraw(msg.sender);
         emit PaymentClaimed(msg.sender, payment);
     }
     
-    function random() private view returns (uint8) {
-        return uint8(uint256(keccak256(abi.encodePacked(block.timestamp))));
-    }
+    
     
 }

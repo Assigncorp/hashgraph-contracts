@@ -35,35 +35,25 @@ contract('Buy Token', function ([_, buyer, seller, otherEntity]) {
   });
   describe('Buy Token', function () {
     it('Should not be able to change seller', async function () {
-      await this.buyToken.DepositPaymentForSeller(seller, 'hello',100, { from: buyer, value:amount });
-      await shouldFail.reverting(this.buyToken.DepositPaymentForSeller(seller, 'hello',100, { from: buyer, value:amount }));
-    });
-    it('Buyer Should not be get seller pass phrase', async function () {
-      await shouldFail.throwing (this.buyToken.hashToSeller({from:buyer}));
-    });
-    it('Seller Should get pass phrase', async function () {
-      await this.buyToken.DepositPaymentForSeller(seller, 'hello',100, { from: buyer, value:amount });
-      (await this.buyToken.hashToSeller({from:seller}));
+      await this.buyToken.DepositPaymentForSeller(seller,this.token.address,100, { from: buyer, value:amount });
+      await shouldFail.reverting(this.buyToken.DepositPaymentForSeller(seller,this.token.address,100, { from: buyer, value:amount }));
     });
     it('Seller Should not deposit different no of tokens', async function () {
-      await this.buyToken.DepositPaymentForSeller(seller, 'hello',100, { from: buyer, value:amount });
-      var sellerPwd = await this.buyToken.hashToSeller({from:seller});
+      await this.buyToken.DepositPaymentForSeller(seller,this.token.address,100, { from: buyer, value:amount });
       await this.token.approve(this.buyToken.address, 100,{from:seller});
-      await shouldFail.reverting(this.buyToken.DepositTokenForBuyer(this.token.address,buyer,10, sellerPwd,{from:seller} ));
+      await shouldFail.reverting(this.buyToken.DepositTokenForBuyer(buyer,10,{from:seller} ));
     });
     it('Buyer Should be able to claim tokens', async function () {
-      await this.buyToken.DepositPaymentForSeller(seller, 'hello',100, { from: buyer, value:amount });
-      var sellerPwd = await this.buyToken.hashToSeller({from:seller});
+      await this.buyToken.DepositPaymentForSeller(seller,this.token.address,100, { from: buyer, value:amount });
       await this.token.approve(this.buyToken.address, 100,{from:seller});
-      await this.buyToken.DepositTokenForBuyer(this.token.address,buyer,100, sellerPwd,{from:seller} );
+      await this.buyToken.DepositTokenForBuyer(buyer,100,{from:seller} );
       await this.buyToken.claimTokens({from:buyer});
       (await this.token.balanceOf.call(buyer)).should.be.bignumber.equal(100);
     });
     it('Seller Should be able to claim payment', async function () {
-      await this.buyToken.DepositPaymentForSeller(seller, 'hello',100, { from: buyer, value:amount });
-      var sellerPwd = await this.buyToken.hashToSeller({from:seller});
+      await this.buyToken.DepositPaymentForSeller(seller,this.token.address,100, { from: buyer, value:amount });
       await this.token.approve(this.buyToken.address, 100,{from:seller});
-      await this.buyToken.DepositTokenForBuyer(this.token.address,buyer,100, sellerPwd,{from:seller} );
+      await this.buyToken.DepositTokenForBuyer(buyer,100,{from:seller} );
       const { logs } = await this.buyToken.claimPayment({from:seller});
       expectEvent.inLogs(logs, 'PaymentClaimed', {
         payee: seller,

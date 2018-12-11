@@ -30,18 +30,15 @@ contract('Buy Token', function ([_, buyer, seller, otherEntity]) {
 
     await this.token.transfer(seller,1000);
    
-    await this.buyToken.DepositPaymentForSeller(seller, 'hello',100, { from: buyer, value:amount });
+    await this.buyToken.DepositPaymentForSeller(seller,this.token.address,100, { from: buyer, value:amount });
     console.log(`Seller Ether waiting = ` +  await this.buyToken.payments(seller));
     
-    var sellerPwd = await this.buyToken.hashToSeller({from:seller});
-    console.log(`Seller Passwrod = ` + sellerPwd);
-
     console.log(`Seller Token = ` + await this.token.balanceOf.call(seller));
     console.log(`Buyer Token = ` + await this.token.balanceOf.call(buyer));
 
     await this.token.approve(this.buyToken.address, 100,{from:seller});
    
-    await this.buyToken.DepositTokenForBuyer(this.token.address,buyer,100, sellerPwd,{from:seller} );
+    await this.buyToken.DepositTokenForBuyer(buyer,100,{from:seller} );
     console.log(`Seller Token after transfer = ` + await this.token.balanceOf.call(seller));
     console.log(`Buyer Token waiting = ` + await this.buyToken.buyerTokens(buyer));
 
